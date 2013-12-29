@@ -148,7 +148,7 @@ SynthDef.new("pitchFollow1",{
 	var harmony, harmony2, partials;
     in = Mix.new(SoundIn.ar([0,1]));
 	amp = Amplitude.kr(in, 0.05, 1);
-    # freq, hasFreq = Pitch.kr(in);
+    # freq, hasFreq = Tartini.kr(in);
 	midinum = freq.cpsmidi.round(1);
 	midinum.postln;
     freq = Lag.kr(midinum.midicps, 0.05);
