@@ -9,6 +9,7 @@ var nametomidi;
 var sound;
 var difference, difference2;
 var tf, tf2;
+var row1, row2, row3, row4;
 
 // define a function to convert a midi note number to a midi note name
 miditoname = ({ arg note = 60, style = \American ;
@@ -65,25 +66,31 @@ diffbuf2=Buffer.loadCollection(s,table,action:{|msg| msg.postln;});
 tf = List.new(table.size);
 tf2 = List.new(table.size);
 
-// define a window called "Setup mapping"
-w = Window.new("Setup mapping", Rect(200,200,15*gap,190));
+// define a window called "Setup mapping", using empty rect to trigger autosize
+w = Window.new("Setup mapping",bounds:Rect());
+row1 = HLayout.new;
+row2 = HLayout.new;
+row3 = HLayout.new;
+row4 = HLayout.new;
 // add the reference notes as labels (fixed), and the mapped notes as text fields (editable)
 // whenever a text field is updated, update the list of mapped notes (mapped)
 table.do({arg item, i;
 	var t, u;
-	StaticText(w, Rect(10+gap*i, 10, gap, 30)).string_(miditoname.value(item));
+	row1.add(StaticText().string_(miditoname.value(item)));
 
-	t = TextField(w, Rect(10+gap*i, 50, gap, 30)).string_(miditoname.value(mapped[i]));
+	t = TextField().string_(miditoname.value(mapped[i]));
 	t.action = { mapped[i] = nametomidi.value(t.value); ("upper map note number " ++ i ++ " from " ++ table[i] ++ " to " ++  mapped[i]).postln;  diffbuf.set(i, (table[i] - mapped[i]).midiratio.reciprocal)};
 	tf.add(t);
+	row2.add(t);
 
-	u = TextField(w, Rect(10+gap*i, 90, gap, 30)).string_(miditoname.value(mapped2[i]));
-	u.action = { mapped2[i] = nametomidi.value(u.value); ("lower map note number " ++ i ++ " from " ++ table[i] ++ " to " ++ mapped2[i]).postln; diffbuf2.set(i, (table[i]-mapped2[i]).midiratio.reciprocal);
+	u = TextField().string_(miditoname.value(mapped2[i]));
+	u.action = { mapped2[i] = nametomidi.value(u.value); ("lower map note number " ++ i ++ " from " ++ table[i] ++ " to " ++ mapped2[i]).postln; diffbuf2.set(i, (table[i]-mapped2[i]).midiratio.reciprocal)};
 	tf2.add(u);
-	};
+    row3.add(u);
 });
+
 // add a button to play a reference note
-c = Button(w, Rect(10,130,100,30)).states_([["Play C4",Color.black,Color.gray]]);
+c = Button().states_([["Play C4",Color.black,Color.gray]]);
 c.action_({arg butt;
 	if (butt.value == 0,
 	{
@@ -92,10 +99,11 @@ c.action_({arg butt;
 	}.play,
 	{})
 });
+row4.add(c);
 
 // also add a start/stop button
 // when the button is set to start, instantiate a new Synth, otherwise free the Synth
-b= Button(w, Rect(110,130,100,30)).states_([
+b= Button().states_([
 	["Start",Color.black, Color.red],
 	["Stop",Color.black, Color.green]]);
 b.action_({arg butt;
@@ -114,6 +122,9 @@ b.action_({arg butt;
 		{   sound.free;}
 	)
 });
+row4.add(b);
+
+w.layout = VLayout(row1, row2, row3, row4);
 
 // define the Synth itself:
 // - first it determines the pitch of what it hears in the microphone
