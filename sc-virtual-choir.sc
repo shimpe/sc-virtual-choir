@@ -53,32 +53,8 @@ nametomidi = ({ arg name = "C4", style = \American ;
 // define a table of reference notes [c c# d ... b]
 table = Array.fill(12, {arg i; i + 60}); // [60,61,...,71]
 // define a table of mapped notes (Default values)
-mapped = [nametomidi.value("g3"),
-	   nametomidi.value("a3"),
-	   nametomidi.value("b3"),
-	   nametomidi.value("bb3"),
-	   nametomidi.value("c4"),
-	   nametomidi.value("c4"),
-	   nametomidi.value("a3"),
-	   nametomidi.value("d4"),
-	   nametomidi.value("e4"),
-	   nametomidi.value("f4"),
-	   nametomidi.value("f4"),
-	   nametomidi.value("g4"),
-];
-mapped2 = [nametomidi.value("e3"),
-	   nametomidi.value("g3"),
-	   nametomidi.value("g3"),
-	   nametomidi.value("g#3"),
-	   nametomidi.value("a3"),
-	   nametomidi.value("a4"),
-	   nametomidi.value("d4"),
-	   nametomidi.value("b4"),
-	   nametomidi.value("c4"),
-	   nametomidi.value("d4"),
-	   nametomidi.value("d4"),
-	   nametomidi.value("d4"),
-];
+mapped = ["e4", "a3", "c4", "c4", "c4", "d4", "d4", "e4", "e4", "e4", "f4", "g4"].collect(nametomidi.value(_));
+mapped2= ["g3", "g3", "g3", "a3", "a4", "a4", "a4", "b4", "b4", "c4", "d4", "d4"].collect(nametomidi.value(_));
 
 // define a table to store the difference between reference and mapped note
 difference = Array.fill(table.size, {0});
