@@ -76,7 +76,16 @@ row4 = HLayout.new;
 // whenever a text field is updated, update the list of mapped notes (mapped)
 table.do({arg item, i;
 	var t, u;
-	row1.add(StaticText().string_(miditoname.value(item)));
+	c = Button().states_([[miditoname.value(item),Color.black,Color.gray]]);
+	c.action_({arg butt;
+		if (butt.value == 0,
+			{
+				var env = Env.perc;
+	            VarSaw.ar(item.midicps)*EnvGen.kr(env, doneAction:2)!2;
+			}.play,
+			{})
+	});
+	row1.add(c);
 
 	t = TextField().string_(miditoname.value(mapped[i]));
 	t.action = { mapped[i] = nametomidi.value(t.value); ("upper map note number " ++ i ++ " from " ++ table[i] ++ " to " ++  mapped[i]).postln;  diffbuf.set(i, (table[i] - mapped[i]).midiratio.reciprocal)};
@@ -88,18 +97,6 @@ table.do({arg item, i;
 	tf2.add(u);
     row3.add(u);
 });
-
-// add a button to play a reference note
-c = Button().states_([["Play C4",Color.black,Color.gray]]);
-c.action_({arg butt;
-	if (butt.value == 0,
-	{
-			var env = Env.perc;
-	        SinOsc.ar(nametomidi.value("c4").midicps)*EnvGen.kr(env, doneAction:2)!2;
-	}.play,
-	{})
-});
-row4.add(c);
 
 // also add a start/stop button
 // when the button is set to start, instantiate a new Synth, otherwise free the Synth
@@ -120,7 +117,7 @@ b.action_({arg butt;
 			sound = Synth.new("pitchFollow1");
 		},
 		{   sound.free;}
-	)
+	);
 });
 row4.add(b);
 
@@ -145,10 +142,13 @@ SynthDef.new("pitchFollow1",{
 	partials = [
 		   0.5,
 		   1,
-		   0.5*harmony,
+		   2,
+		 0.5*harmony,
 		   1*harmony,
+		   2*harmony,
 		 0.5*harmony2,
 		   1*harmony2,
+		   2*harmony2,
 	];
 	out = Mix.new(PitchShift.ar(in, 0.2, partials, 0, 0.004));
 
