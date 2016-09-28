@@ -1,5 +1,18 @@
 s.boot;
+s.meter;
 
+// pitch shift input - USE HEADPHONES to prevent feedback.
+(play({
+    PitchShift.ar(
+        AudioIn.ar([1,2]), // stereo audio input
+        0.1,               // grain size
+        MouseX.kr(0.5,2),  // mouse x controls pitch shift ratio
+		0,                 // pitch dispersion
+		0.004              // time dispersion
+    )
+}))
+
+// harmonizer
 (
 var table;
 var gap = 40;
@@ -134,8 +147,8 @@ SynthDef.new("pitchFollow1",{
 	amp = Amplitude.kr(in, 0.05, 1);
     # freq, hasFreq = Tartini.kr(in);
 	midinum = freq.cpsmidi.round(1);
-	midinum.postln;
-    freq = Lag.kr(midinum.midicps, 0.05);
+	//midinum.postln;
+    //freq = Lag.kr(midinum.midicps, 0.01);
 	//freq = midinum.midicps;
 	harmony2= WrapIndex.kr(diffbuf2.bufnum, midinum);
 	harmony = WrapIndex.kr(diffbuf.bufnum, midinum);
@@ -150,13 +163,13 @@ SynthDef.new("pitchFollow1",{
 		   1*harmony2,
 		   2*harmony2,
 	];
-	out = Mix.new(PitchShift.ar(in, 0.2, partials, 0, 0.004));
+	out = Mix.new(PitchShift.ar(in, 0.2, partials, 0, 0.001));
 
     7.do({
 		out = AllpassN.ar(out, 0.040, [0.040.rand,0.040.rand], 2)
     });
 
-    Out.ar(0,out/partials.size)
+	Out.ar(0,(out/partials.size))
 
 }).add;
 
@@ -164,4 +177,6 @@ SynthDef.new("pitchFollow1",{
 w.front;
 
 )
+
+
 
